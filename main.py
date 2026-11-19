@@ -68,7 +68,9 @@ motion_title.pack()
 
 motion_output = ttk.Frame(motion_page, style = "TFrame")
 motion_output.pack(side='right')
-all_motions = text_box = tk.Text(motion_output, width=35, height=90, wrap="word")
+motion_label = ttk.Label(master = motion_output, text = "most to least disruptive:", style = "smallBold.TLabel", justify='center')
+motion_label.pack(side='top', pady=4)
+all_motions = tk.Text(motion_output, width=35, height=75, wrap="word")
 all_motions.pack(side='top',padx=10, pady=10)
 
 
@@ -134,20 +136,64 @@ proposer_ent = ttk.Entry(proposer, style = "TEntry", width=3)
 proposer_ent.pack(fill='x',side='top')
 
 motions = []
-# def enter_motion():
-#     motion=[]
-#     motion.append(proposer_ent.get())
-#     if (speakers_st_enter.get()!=""):
-#         motion.append(speakers_st_enter.get())
-#         motion.append(speakers_q_enter.get())
-#         motion.append(speakers_f_enter.get())
-#     if (gents_total_enter.get()!=""):
-#         motion.append(gents_total_enter.get())
-#     print(motion)
-#     motions.append(motion)
+def enter_motion():
+    motion=[]
+    motion.append(proposer_ent.get())
+    proposer_ent.delete(0, 'end')
+    if (speakers_st_enter.get()!=""):
+        motion.append(speakers_st_enter.get())
+        motion.append(speakers_q_enter.get())
+        motion.append(speakers_f_enter.get())
+        motion.insert(0, 400+(int(speakers_st_enter.get())))
+        speakers_st_enter.delete(0, 'end')
+        speakers_q_enter.delete(0, 'end')
+        speakers_f_enter.delete(0, 'end')
+    if (gents_total_enter.get()!=""):
+        motion.append(gents_total_enter.get())
+        motion.insert(0, 300+(int(gents_total_enter.get())))
+        gents_total_enter.delete(0, 'end')
+    if (unmod_total_enter.get()!=""):
+        motion.append(unmod_total_enter.get())
+        motion.insert(0, 200+(int(unmod_total_enter.get())))
+        unmod_total_enter.delete(0, 'end')
+    if (mod_total_enter.get()!=""):
+        motion.append(mod_total_enter.get())
+        motion.append(mod_speaking_enter.get())
+        motion.insert(0, 100+(int(mod_total_enter.get())*60/(int(mod_speaking_enter.get()))))
+        mod_total_enter.delete(0, 'end')
+        mod_speaking_enter.delete(0, 'end')
+    if (ext_total_enter.get()!=""):
+        exttotal = int(ext_total_enter.get())
+        extspeaking = int(ext_speaking_enter.get())
+        motion.append(ext_total_enter.get())
+        motion.append(ext_speaking_enter.get())
+        motion.insert(0, 2000+(exttotal*60/(extspeaking)))
+        ext_total_enter.delete(0, 'end')
+        ext_speaking_enter.delete(0, 'end')
 
-motion_enter_button = ttk.Button(motion_input, style = 'nextButton.TButton', text="Enter Motion", width = 20
-                                 #command = enter_motion()
+    
+    
+    motions.append(motion)
+
+    motions.sort(key=lambda motion: motion[0], reverse=True)
+
+    all_motions.delete('1.0', tk.END)
+    for i in range(len(motions)):
+        if motions[i][0]>2000:
+            all_motions.insert(tk.END, str(i+1) + ". " + motions[i][2] + ": " + motions[i][3] + " extension proposed by " + motions[i][1]+"\n")
+        elif motions[i][0]>400:
+            all_motions.insert(tk.END, str(i+1) + ". " + motions[i][2] + " second speaker's list " + motions[i][3] + " questions + "+ motions[i][4]+" follow ups proposed by " + motions[i][1]+"\n")
+        elif motions[i][0]>300:
+            all_motions.insert(tk.END, str(i+1) + ". " + motions[i][2] + " min gentleman's unmod proposed by " + motions[i][1]+"\n")
+        elif motions[i][0]>200:
+            all_motions.insert(tk.END, str(i+1) + ". " + motions[i][2] + " min unmoderated caucus proposed by " + motions[i][1]+"\n")
+        elif motions[i][0]>100:
+            all_motions.insert(tk.END, str(i+1) + ". " + motions[i][2] + " : " + motions[i][3] + " mod proposed by " + motions[i][1]+"\n")
+
+    print(motions)
+
+motion_enter_button = ttk.Button(motion_input, style = 'nextButton.TButton', text="Enter Motion", width = 20,
+                                 command = enter_motion
                                  )
 motion_enter_button.pack()
 
